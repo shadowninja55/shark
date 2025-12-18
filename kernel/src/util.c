@@ -1,11 +1,10 @@
 #include "util.h"
 #include <stdint.h>
 
-// GCC and Clang reserve the right to generate calls to the following
+// gcc and clang reserve the right to generate calls to the following
 // 4 functions even if they are not directly called.
-// Implement them as the C specification mandates.
-// DO NOT remove or rename these functions, or stuff will eventually break!
-// They CAN be moved to a different .c file.
+// implement them as the c specification mandates.
+// do NOT remove or rename these functions, or stuff will eventually break!
 
 void *memcpy(void *restrict dst, const void *restrict src, size_t n) {
   uint8_t *restrict pdst = (uint8_t *restrict) dst;
@@ -52,8 +51,14 @@ int memcmp(const void *s1, const void *s2, size_t n) {
   return 0;
 }
 
-// Halt and catch fire function.
+// halt and catch fire
+__attribute__((noreturn))
 void hcf(void) {
   for (;;)
     asm ("hlt");
+}
+
+void qprint(const char *s) {
+  while (*s)
+    asm ("out %0, $0xe9" : : "a"(*s++));
 }

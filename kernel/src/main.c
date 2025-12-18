@@ -53,6 +53,8 @@ void kmain(void) {
     fb_ptr[i * (framebuffer->pitch / 4) + i] = 0xffffff;
   }
 
+  qprint("hello qemu");
+
   // We're done, just hang...
   hcf();
 }
