@@ -1,2 +1,1 @@
-((nil . ((eval . (set-command
-		  (lambda (interactive) (compile "nix-shell --run 'make run'")))))))
+((nil . ((eval . (set-command (compile "nix-shell --run 'cd ../.. && make run' ../../shell.nix"))))))
