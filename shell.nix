@@ -5,6 +5,6 @@ in
 
 pkgs.mkShellNoCC {
   packages = with pkgs; [
-    libisoburn qemu
+    libisoburn qemu nasm
   ];
 }
