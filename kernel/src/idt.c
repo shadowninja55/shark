@@ -4,6 +4,7 @@
 #include "util.h"
 #include "printf.h"
 #include "pic.h"
+#include "timer.h"
 
 typedef struct {
 	uint16_t isr_low;    // lower 16 bits of the isr's address
@@ -26,16 +27,26 @@ static idtr_t idtr; // idt register
 
 __attribute__((noreturn))
 void exception_handler(uint8_t vector, uint64_t error_code) {
-  printf("[exception] vector: %u, error code: %lu\n", vector, error_code);
+  printf("[exception] vector: %u, error code: %llu\n", vector, error_code);
 	asm volatile ("cli; hlt");
 }
 
 void irq_handler(uint8_t vector) {
   uint8_t irq = vector - 32;
-  printf("[interrupt] irq: %u\n", irq);
-  if (irq == 1) {
-    uint8_t key = inb(0x60);
-    printf("[keyboard] scancode: %u\n", key);
+  switch (irq) {
+    case 0:
+      uint64_t ticks = timer_get();
+      if (!(ticks % 1000)) {
+        printf("[timer] ticks: %llu\n", ticks);
+      }
+      timer_tick();
+      break;
+    case 1:
+      uint8_t key = inb(0x60);
+      printf("[keyboard] scancode: %u\n", key);
+      break;
+    default:
+      printf("[interrupt] irq: %u\n", irq);
   }
   pic_send_eoi(irq);
 }

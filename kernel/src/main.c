@@ -7,6 +7,7 @@
 #include "util.h"
 #include "idt.h"
 #include "pic.h"
+#include "timer.h"
 
 // Set the base revision to 4, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -61,6 +62,9 @@ void kmain(void) {
 
   // remap pic so that irq's don't conflict with cpu exception vectors
 	pic_remap(32, 32 + 8);
+
+  timer_set_freq(1000);
 	idt_init();
+
   hcf();
 }
