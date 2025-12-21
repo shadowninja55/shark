@@ -5,6 +5,7 @@
 #include "printf.h"
 #include "pic.h"
 #include "timer.h"
+#include "keyboard.h"
 
 typedef struct {
 	uint16_t isr_low;    // lower 16 bits of the isr's address
@@ -38,12 +39,16 @@ void irq_handler(uint8_t vector) {
       uint64_t ticks = timer_get();
       if (!(ticks % 1000)) {
         printf("[timer] ticks: %llu\n", ticks);
+				char queue[33];
+				keyboard_get_queue(queue);
+				printf("[keyboard] current queue:");
+				for (int i = 0; queue[i]; i++) printf(" %c", queue[i]);
+				printf("\n");
       }
       timer_tick();
       break;
     case 1:
-      uint8_t key = inb(0x60);
-      printf("[keyboard] scancode: %u\n", key);
+			keyboard_trigger();
       break;
     default:
       printf("[interrupt] irq: %u\n", irq);

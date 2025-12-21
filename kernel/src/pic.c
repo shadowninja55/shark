@@ -1,18 +1,13 @@
 #include "pic.h"
 #include "util.h"
 
-// https://wiki.osdev.org/Inline_Assembly/Examples#I/O_access
-static inline void io_wait(void) {
-	outb(0x80, 0);
-}
-
 // ports
 #define MASTER          0x20 // base address for master pic
-#define SLAVE          0xa0 // base address for slave pic
+#define SLAVE           0xa0 // base address for slave pic
 #define MASTER_COMMAND  MASTER
 #define MASTER_DATA    (MASTER+1)
-#define SLAVE_COMMAND  SLAVE
-#define SLAVE_DATA    (SLAVE+1)
+#define SLAVE_COMMAND   SLAVE
+#define SLAVE_DATA     (SLAVE+1)
 #define PIC_EOI 0x20 // end-of-interrupt command code
 
 // should be issued to pic chip at the end of an irq-based isr

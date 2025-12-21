@@ -73,3 +73,8 @@ void outb(uint16_t port, uint8_t byte) {
 void _putchar(char c) {
   outb(0xe9, c);
 }
+
+// https://wiki.osdev.org/Inline_Assembly/Examples#I/O_access
+void io_wait(void) {
+	outb(0x80, 0);
+}
