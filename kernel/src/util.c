@@ -1,5 +1,4 @@
 #include "util.h"
-#include <stdint.h>
 
 // gcc and clang reserve the right to generate calls to the following
 // 4 functions even if they are not directly called.
@@ -58,7 +57,12 @@ void hcf(void) {
     asm ("hlt");
 }
 
-void qprint(const char *s) {
-  while (*s)
-    asm ("out %0, $0xe9" : : "a"(*s++));
+// output byte to port
+void outb(uint16_t port, uint8_t byte) {
+  asm volatile ("outb %b0, %w1" : : "a"(byte), "Nd"(port) : "memory");
+}
+
+// _putchar impl for printf library
+void _putchar(char c) {
+  outb(0xe9, c);
 }

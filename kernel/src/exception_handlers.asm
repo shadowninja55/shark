@@ -1,15 +1,17 @@
 %macro isr_err_stub 1
 isr_stub_%+%1:	
+  mov rdi, %1             ; vector
+  mov rsi, [rsp]          ; error code
 	call exception_handler
 	iretq
 %endmacro
 
 %macro isr_no_err_stub 1
 isr_stub_%+%1:	
+  mov rdi, %1             ; vector
 	call exception_handler
 	iretq
 %endmacro
-
 
 extern exception_handler
 isr_no_err_stub 0
@@ -46,9 +48,9 @@ isr_err_stub    30
 isr_no_err_stub 31
 
 global isr_stub_table
-isr_stub_table
+isr_stub_table:
 %assign i 0
 %rep 32
 	dq isr_stub_%+i
-%assign i i + 1
+  %assign i i + 1
 %endrep

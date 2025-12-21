@@ -1,5 +1,9 @@
-#include <stddef.h>
+#define STB_SPRINTF_IMPLEMENTATION
+
 #include <limine.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include "printf.h"
 #include "util.h"
 
 // Set the base revision to 4, this is recommended as this is the latest
@@ -56,40 +60,39 @@ typedef struct {
 static idtr_t idtr; // idt register
 
 __attribute__((noreturn))
-void exception_handler(void) {
-	qprint("exception caught");
-	__asm__ volatile ("cli; hlt"); // hang!
+void exception_handler(uint64_t vector, uint64_t error_code) {
+  printf("[exception] vector: %lu, error code: %lu\n", vector, error_code);
+	asm volatile ("cli; hlt"); // hang!
 }
 
 void idt_set_descriptor(uint8_t vector, void *isr, uint8_t flags) {
 	idt_entry_t *descriptor = &idt[vector];
-	descriptor->isr_low    = (uint64_t)isr & 0xFFFF;
-	descriptor->kernel_cs  = 0;
+	descriptor->isr_low    = (uint64_t) isr & 0xFFFF;
+	descriptor->kernel_cs  = 0x28;
 	descriptor->ist        = 0;
 	descriptor->attributes = flags;
-	descriptor->isr_mid    = ((uint64_t)isr) >> 16 & 0xFFFF;
-	descriptor->isr_high   = ((uint64_t)isr) >> 32 & 0xFFFFFFFF;
+	descriptor->isr_mid    = ((uint64_t) isr >> 16) & 0xFFFF;
+	descriptor->isr_high   = ((uint64_t) isr >> 32) & 0xFFFFFFFF;
 	descriptor->reserved   = 0;
 }
 
 #define IDT_MAX_DESCRIPTORS 32
 
+static bool vectors[IDT_MAX_DESCRIPTORS];
 extern void *isr_stub_table[];
 
 void idt_init() {
-	idtr.base = (uintptr_t)&idt[0];
-	idtr.limit = (uint16_t)sizeof(idt_entry_t) * IDT_MAX_DESCRIPTORS - 1;
+	idtr.base = (uintptr_t) &idt[0];
+	idtr.limit = (uint16_t) sizeof(idt_entry_t) * IDT_MAX_DESCRIPTORS - 1;
 
 	for (uint8_t vector = 0; vector < 32; vector++) {
 		idt_set_descriptor(vector, isr_stub_table[vector], 0x8E);
+    vectors[vector] = true;
 	}
 
-	__asm__ volatile ("lidt %0" : : "m"(idtr)); // load the idt
-	__asm__ volatile ("sti"); // set the interrupt flag
+	asm volatile ("lidt %0" : : "m"(idtr)); // load the idt
+	asm volatile ("sti"); // set the interrupt flag
 }
-
-
-
 
 /* -----------------
 	 PIC stuff
@@ -97,10 +100,6 @@ void idt_init() {
    ----------------- */
 
 // https://wiki.osdev.org/Inline_Assembly/Examples#I/O_access
-static inline void outb(uint16_t port, int8_t val) {
-  __asm__ volatile ("outb %b0, %w1" : : "a"(val), "Nd"(port) : "memory");
-}
-
 static inline void io_wait(void) {
 	outb(0x80, 0);
 }
@@ -171,20 +170,16 @@ void PIC_remap(int offset1, int offset2) {
 	outb(PIC2_DATA, 0);
 }
 
-
-
-
-
 // The following will be our kernel's entry point.
 // If renaming kmain() to something else, make sure to change the
 // linker script accordingly.
 void kmain(void) {
-  // Ensure the bootloader actually understands our base revision (see spec).
+  // Ensure the bootloaderPIC actually understands our base revision (see spec).
   if (!LIMINE_BASE_REVISION_SUPPORTED(limine_base_revision)) {
     hcf();
   }
 
-	PIC_remap(0x00, 0x08);
+	PIC_remap(0x20, 0x28);
 	idt_init();
 
   // Ensure we got a framebuffer.
@@ -202,7 +197,9 @@ void kmain(void) {
     fb_ptr[i * (framebuffer->pitch / 4) + i] = 0xffffff;
   }
 
-  qprint("hello qemu");
+  printf("framebuffer worked?\n");
+
+  // asm volatile ("ud2");
 
   // We're done, just hang...
   hcf();
