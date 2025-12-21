@@ -1,6 +1,7 @@
 #include "idt.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include "util.h"
 #include "printf.h"
 #include "pic.h"
 
@@ -32,6 +33,10 @@ void exception_handler(uint8_t vector, uint64_t error_code) {
 void irq_handler(uint8_t vector) {
   uint8_t irq = vector - 32;
   printf("[interrupt] irq: %u\n", irq);
+  if (irq == 1) {
+    uint8_t key = inb(0x60);
+    printf("[keyboard] scancode: %u\n", key);
+  }
   pic_send_eoi(irq);
 }
 
@@ -46,7 +51,7 @@ static void idt_set_descriptor(uint8_t vector, void *isr, uint8_t flags) {
 	descriptor->reserved    = 0;
 }
 
-#define IDT_MAX_DESCRIPTORS (32 + 16)
+#define IDT_MAX_DESCRIPTORS 48
 
 extern void *isr_stub_table[];
 

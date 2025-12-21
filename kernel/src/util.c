@@ -57,6 +57,13 @@ void hcf(void) {
     asm ("hlt");
 }
 
+// read byte from port
+uint8_t inb(uint16_t port) {
+  uint8_t byte;
+  asm volatile ("inb %w1, %b0" : "=a"(byte) : "Nd"(port) : "memory");
+  return byte;
+}
+
 // output byte to port
 void outb(uint16_t port, uint8_t byte) {
   asm volatile ("outb %b0, %w1" : : "a"(byte), "Nd"(port) : "memory");
