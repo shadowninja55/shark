@@ -36,8 +36,8 @@ void pic_send_eoi(uint8_t irq) {
 
 #define CASCADE_IRQ 2
 
-// vectors on the master become offset1..offset1+7
-// on the slave become offset2..offset2+7
+// vectors on the master become master_offset..master_offset+7
+// on the slave become slave_offset..slave_offset+7
 void pic_remap(int master_offset, int slave_offset) {
 
 	// icw1: start the initialization sequence

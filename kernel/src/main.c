@@ -59,10 +59,8 @@ void kmain(void) {
     volatile uint32_t *fb_ptr = framebuffer->address;
     fb_ptr[i * (framebuffer->pitch / 4) + i] = 0xffffff;
   }
-
-  // remap pic so that irq's don't conflict with cpu exception vectors
-	pic_remap(32, 32 + 8);
-
+  
+	pic_remap(32, 32 + 8); // remap pic so that irq's don't conflict with cpu exception vectors
   timer_set_freq(1000);
 	idt_init();
 

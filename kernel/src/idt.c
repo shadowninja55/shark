@@ -39,11 +39,14 @@ void irq_handler(uint8_t vector) {
       uint64_t ticks = timer_get();
       if (!(ticks % 1000)) {
         printf("[timer] ticks: %llu\n", ticks);
-				char queue[33];
+				char queue[QUEUE_CAP + 1];
 				keyboard_get_queue(queue);
+				printf("[keyboard] current queue: %s\n", queue);
+        /*
 				printf("[keyboard] current queue:");
 				for (int i = 0; queue[i]; i++) printf(" %c", queue[i]);
 				printf("\n");
+        */
       }
       timer_tick();
       break;
