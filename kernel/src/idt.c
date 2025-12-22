@@ -41,12 +41,7 @@ void irq_handler(uint8_t vector) {
         printf("[timer] ticks: %llu\n", ticks);
 				char queue[QUEUE_CAP + 1];
 				keyboard_get_queue(queue);
-				printf("[keyboard] current queue: %s\n", queue);
-        /*
-				printf("[keyboard] current queue:");
-				for (int i = 0; queue[i]; i++) printf(" %c", queue[i]);
-				printf("\n");
-        */
+				printf("[keyboard] queue: %s\n", queue);
       }
       timer_tick();
       break;
