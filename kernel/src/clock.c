@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <limine.h>
+#include "clock.h"
 #include "util.h"
 #include "printf.h"
 
@@ -55,4 +56,8 @@ void clock_trigger(void) {
     if (tock) printf("[rtc] unix time: %llu\n", unix_time);
     tock = !tock;
   }
+}
+
+uint64_t clock_get(void) {
+  return unix_time;
 }
