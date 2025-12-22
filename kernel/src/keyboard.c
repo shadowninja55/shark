@@ -7,7 +7,7 @@
 
 static bool spacebar = false;
 static bool letters[26] = { false };
-static char queue[QUEUE_CAP + 1];
+static char queue[QUEUE_CAP];
 static size_t queue_len = 0;
 const char *keys = "qwertyuiopasdfghjkl zxcvbnm";
 
