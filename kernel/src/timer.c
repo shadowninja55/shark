@@ -16,7 +16,7 @@ void timer_set_freq(uint32_t hz) {
   outb(DATA, div >> 8);    // hibyte
 }
 
-void timer_tick() {
+void timer_trigger() {
   ticks++;
 }
 

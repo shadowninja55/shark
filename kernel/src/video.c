@@ -1,13 +1,7 @@
 #include <limine.h>
-#include <stddef.h>
 #include "video.h"
 #include "util.h"
 #include "printf.h"
-
-// The Limine requests can be placed anywhere, but it is important that
-// the compiler does not optimise them away, so, usually, they should
-// be made volatile or equivalent, _and_ they should be accessed at least
-// once or marked as used with the "used" attribute as done here.
 
 __attribute__((used, section(".limine_requests")))
 static volatile struct limine_framebuffer_request fb_req = {
@@ -18,7 +12,7 @@ static struct limine_framebuffer *fb;
 static uint32_t *fb_ptr; 
 
 void video_init(void) {
-  if (fb_req.response == NULL || fb_req.response->framebuffer_count < 1) {
+  if (!fb_req.response || fb_req.response->framebuffer_count < 1) {
     printf("[fatal] no framebuffer\n");
     hcf();
   }

@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 void timer_set_freq(uint32_t hz);
-void timer_tick(void);
+void timer_trigger(void);
 uint64_t timer_get(void);
 
 #endif

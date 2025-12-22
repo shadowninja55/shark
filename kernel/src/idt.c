@@ -32,28 +32,6 @@ void exception_handler(uint8_t vector, uint64_t error_code) {
 	asm volatile ("cli; hlt");
 }
 
-void irq_handler(uint8_t vector) {
-  uint8_t irq = vector - 32;
-  switch (irq) {
-    case 0:
-      uint64_t ticks = timer_get();
-      if (!(ticks % 1000)) {
-        printf("[timer] ticks: %llu\n", ticks);
-				char queue[QUEUE_CAP + 1];
-				keyboard_get_queue(queue);
-				printf("[keyboard] queue: %s\n", queue);
-      }
-      timer_tick();
-      break;
-    case 1:
-			keyboard_trigger();
-      break;
-    default:
-      printf("[interrupt] irq: %u\n", irq);
-  }
-  pic_send_eoi(irq);
-}
-
 static void idt_set_descriptor(uint8_t vector, void *isr, uint8_t flags) {
 	idt_entry_t *descriptor = &idt[vector];
 	descriptor->isr_low     = (uint64_t) isr & 0xffff;
