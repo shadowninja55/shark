@@ -3,10 +3,10 @@
 
 #include <stdbool.h>
 
-#define QUEUE_CAP 32
+#define QUEUE_CAP 64
 
 void keyboard_trigger(void);
-bool keyboard_get(char c);
-void keyboard_get_queue(char *out);
+bool keyboard_is_down(char c);
+char keyboard_get_next(void);
 
 #endif

@@ -4,6 +4,7 @@
 #include "keyboard.h"
 #include "pic.h"
 #include "clock.h"
+#include "game.h"
 
 #define IRQ_PIT      0
 #define IRQ_KEYBOARD 1
@@ -14,15 +15,8 @@ void irq_handler(uint8_t vector) {
   switch (irq) {
     case IRQ_PIT:
       timer_trigger();
-
       uint64_t ticks = timer_get();
-      if (!(ticks % 5000)) {
-        printf("[timer] ticks: %llu\n", ticks);
-				char queue[QUEUE_CAP + 1];
-				keyboard_get_queue(queue);
-				printf("[keyboard] queue: %s\n", queue);
-      }
-
+      if (!(ticks % 100)) game_trigger();
       break;
     case IRQ_KEYBOARD:
 			keyboard_trigger();

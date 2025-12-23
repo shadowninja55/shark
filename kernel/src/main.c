@@ -1,3 +1,4 @@
+#include "game.h"
 #define STB_SPRINTF_IMPLEMENTATION
 
 #include <limine.h>
@@ -37,7 +38,9 @@ void kmain(void) {
   printf("[info] kernel booted\n");
 
   video_init();
+  game_init();
 
+  /*
   uint64_t w = video_width();
   uint64_t h = video_height();
 
@@ -48,6 +51,7 @@ void kmain(void) {
       video_set(x, y, c);
     }
   }
+  */
   
 	pic_remap(32, 32 + 8);
   clock_init();
