@@ -64,9 +64,12 @@ void draw_tile(struct v2 p, enum tile t) {
       break;
   }
 
+  int cx = (video_width() - WIDTH * scale) / 2;
+  int cy = (video_height() - HEIGHT * scale) / 2;
+
   for (int dy = 0; dy < scale; dy++) {
     for (int dx = 0; dx < scale; dx++) {
-      video_set(p.x * scale + dx, p.y * scale + dy, c);
+      video_set(cx + p.x * scale + dx, cy + p.y * scale + dy, c);
     }
   }
 }
